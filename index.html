@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>  
+    <meta charset="utf-8">
+    <title>The Labyrinth</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+  <body>
+  <center>    
+    <div id="gameScreen" style="display: none;">
+      <svg id="canvas" width="100%" viewBox="0 0 980 460"></svg>   
+    </div>
+
+    <div id="modeScreen" style="display: block;">
+      <h1>The Labyrinth</h1>
+      <h2>Select the Game Mode</h2><br>
+      <button id="escapeButton" onclick="changeGameMode('escape')">Escape</button>
+      <button id="survivalButton" onclick="changeGameMode('survival')">Survival</button>
+    </div>  
+
+    <div id="escapeScreen" style="display: none;">
+      <h1>The Labyrinth</h1>
+      <h2>Select the Amount of Enemies Spawned</h2><br>
+      <div class="sliderContainer">  
+        <input type="range" min="0" max="10" value="1" step="1" class="slider" id="enemySpawnSlider" onfocus="enemySpawnSlider.style.backgroundColor = 'rgba(220, 220, 220, 0.6)'" onblur="enemySpawnSlider.style.backgroundColor = 'rgba(220, 220, 220, 0.5)'" oninput="enemySpawnValue.innerHTML = enemySpawnSlider.value">
+        <h2 id="enemySpawnValue">1</h2>  
+      </div><br><br>
+      <h2>Select the Amount of Player(s)</h2><br>  
+      <button id="escapeOneButton" onclick="changeAmountOfPlayer(1)">1 Player</button>
+      <button id="escapeTwoButton" onclick="changeAmountOfPlayer(2)">2 Players</button>
+    </div>  
+
+    <div id="survivalScreen" style="display: none;">
+      <h1>The Labyrinth</h1>
+      <h2>Select the Game Length</h2><br>
+      <div class="sliderContainer">  
+        <input type="range" min="1" max="30" value="5" step="1" class="slider" id="timeSlider" onfocus="timeSlider.style.backgroundColor = 'rgba(220, 220, 220, 0.6)'" onblur="timeSlider.style.backgroundColor = 'rgba(220, 220, 220, 0.5)'" oninput="timeValue.innerHTML = timeSlider.value + ':00'">
+        <h2 id="timeValue">5:00</h2>  
+      </div><br><br>
+      <div id="survivalDecisionArea">  
+        <h2>Select the Amount of Player(s)</h2><br>  
+        <button id="survivalOneButton" onclick="changeAmountOfPlayer(1)">1 Player</button>
+        <button id="survivalTwoButton" onclick="changeAmountOfPlayer(2)">2 Players</button>
+      </div>
+    </div>  
+      
+  </center>        
+      
+    <div id="tutorialSpace">    
+      <!--Include a header DIV with the same name as the draggable DIV, followed by "header":-->
+      <div id="tutorialSpaceHeader">Move</div>
+      <div id="deleteButton" onclick="hideTutorialSpace()">X</div>
+      <div id="tutorialText">
+        <h3><u>Background:</u></h3>  
+        <p>&emsp; This game is Snake. A classic from the late 1970s and remastered with Javascript. The purpose of the game is to eat a lot of food and grow big and long! All the while, avoiding the boundaries and cannabalism.</p>      
+        <button class="nextButton" onclick="displayNextSlide()">Right arrow: <i class="arrow right"></i></button>
+      </div>    
+    </div>
+    
+    <script src="maze.js"></script>
+  </body>
+</html>

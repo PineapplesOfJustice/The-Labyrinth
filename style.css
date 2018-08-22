@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css?family=Ravi+Prakash|Audiowide|Arima+Madurai|Special+Elite');
+
+body{
+  background-image: url("Images/Background/Black Background.jpg");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+  overflow-y: hidden;  
+}
+
+svg{  
+}
+
+h1{
+  font-size: 80px; 
+  font-family: Ravi Prakash;
+  color: whitesmoke; 
+  margin-bottom: 0px;  
+}
+
+h2{
+  margin-top: 0px;  
+  font-size: 20px;
+  font-family: Ravi Prakash; 
+  color: whitesmoke;
+}
+
+button{
+  margin-right: 7px;
+  padding-right: 5px;
+  padding-left: 5px;
+  width: 120px;
+  height: 30px;  
+  background-color: beige;
+  font-family: Special Elite;
+  color: purple; 
+  border-color: purple;  
+  cursor:pointer;
+}
+
+button:hover{ 
+  color: beige;
+  background-color: purple;  
+}
+
+.clip{
+  clip-path: url(#clip);
+}
+
+#tutorialSpace{
+  display: none;  
+  width: 300px;
+  height: 400px; 
+  position: absolute;
+  z-index: 9;
+  background-color: lightgoldenrodyellow;
+  border: 3px solid white;  
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#tutorialSpaceHeader{  
+  padding: 10px;  
+  width: 61%;
+  float: left;  
+  cursor: move;
+  z-index: 10;
+  background-color: #2196F3;
+  color: #fff;
+  text-align: center;
+  font-family: Audiowide;
+}
+
+#deleteButton{
+  padding: 10px;
+  width: 25%;  
+  float: left;  
+  cursor: pointer;  
+  z-index: 10;
+  background-color: red;
+  color: #fff;
+  text-align: center;
+  font-family: Audiowide;
+}
+
+#tutorialText{
+  padding: 10px;  
+  margin-top: 20px;
+  font-family: Arima Madurai;
+  font-size: 110%;  
+}
+
+.arrow{
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.right{
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.left{
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+.nextButton{ 
+  border: none;
+  background-color: rgba(0, 0, 0, 0);  
+  color: black;  
+  float: right;  
+  margin-right: 5px;
+  padding-right: 5px;
+  padding-left: 5px;  
+  font-family: Special Elite;
+}
+
+.nextButton:hover{ 
+  text-decoration: underline;  
+  background-color: lightgoldenrodyellow;
+  color: black;  
+}
+
+*{
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Used W3School to understand Slider */
+
+.sliderContainer {
+    width: 30%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 20px; /* Specified height */
+    background: rgba(220, 220, 220, 0.5); /* Grey background */
+    outline: none; /* Remove outline */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */ 
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 30px; /* Set a specific slider handle width */
+    height: 30px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+    width: 30px; /* Set a specific slider handle width */
+    height: 30px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
