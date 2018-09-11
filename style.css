@@ -48,12 +48,11 @@ button:hover{
 }
 
 #tutorialSpace{
-  display: none;  
-  width: 300px;
-  height: 400px; 
+  width: 650px;
+  height: 300px; 
   position: absolute;
   z-index: 9;
-  background-color: lightgoldenrodyellow;
+  background-color: black;
   border: 3px solid white;  
   top: 50%;
   left: 50%;
@@ -62,11 +61,11 @@ button:hover{
 
 #tutorialSpaceHeader{  
   padding: 10px;  
-  width: 61%;
+  width: 67%;
   float: left;  
   cursor: move;
   z-index: 10;
-  background-color: #2196F3;
+  border: 3px solid #2196F3;
   color: #fff;
   text-align: center;
   font-family: Audiowide;
@@ -78,21 +77,27 @@ button:hover{
   float: left;  
   cursor: pointer;  
   z-index: 10;
-  background-color: red;
+  border: 3px solid red;
   color: #fff;
   text-align: center;
   font-family: Audiowide;
 }
 
 #tutorialText{
+  color: white;  
   padding: 10px;  
   margin-top: 20px;
   font-family: Arima Madurai;
-  font-size: 110%;  
+  font-size: 110%;
+}
+
+#tutorialText > p{
+  text-indent: 50px;  
 }
 
 .arrow{
-  border: solid black;
+  border: solid white;
+  color: white;  
   border-width: 0 3px 3px 0;
   display: inline-block;
   padding: 3px;
@@ -111,7 +116,7 @@ button:hover{
 .nextButton{ 
   border: none;
   background-color: rgba(0, 0, 0, 0);  
-  color: black;  
+  color: whitesmoke;  
   float: right;  
   margin-right: 5px;
   padding-right: 5px;
@@ -120,9 +125,7 @@ button:hover{
 }
 
 .nextButton:hover{ 
-  text-decoration: underline;  
-  background-color: lightgoldenrodyellow;
-  color: black;  
+  border: 2px solid whitesmoke;
 }
 
 *{

@@ -738,7 +738,8 @@ function removeExit(){
     }
   }
   if(mazeEscape == 0 || mazeEscape == 1){
-    player[mazeEscape].data.setAttribute("opacity", 0);   
+    player[mazeEscape].data.setAttribute("opacity", 0); 
+    player[mazeEscape].death = true;  
     for(var i=0, length=entrance.minotaur.mainWall.length; i<length; i++){
       var x = entrance.minotaur.mainWall[i].x;
       var y = entrance.minotaur.mainWall[i].y;  
@@ -754,7 +755,7 @@ function removeExit(){
       maze.data[y][x].wall[entrance.minotaur.specialWall] = true;  
       updateMazeWall(x, y);  
     } 
-    gameOver();  
+    gameOver("escaped");  
   } 
   else{
     requestAnimationFrame(removeExit);  
@@ -774,7 +775,7 @@ function countdown(){
     
   if(minute <= 0 && second <= 0){
     clearInterval(timerId);
-    gameOver();  
+    gameOver("survived");  
   }
   if(second < 10){
     second = "0" + second;  
@@ -904,7 +905,9 @@ function updatePlayerInput(event){
   if(key == 84){ gameStatus = "inactive"; setTimeout(returnToTitleScreen, 200); }
   
   // I/H Key  
-  if(key == 73 || key == 72){ displayTutorialAgain(); }
+  if(key == 73 || key == 72){ 
+      displayTutorialAgain(); 
+  }
 
   if(key == 32){
     if(assist.status){
@@ -934,7 +937,7 @@ function checkForPlayerCollision(){
       }
     }, 1000);
     clearInterval(timerId);  
-    gameOver();
+    gameOver("gored");
   }
 }
 
@@ -1123,7 +1126,7 @@ function checkForMinotaurCollision(minotaurId){
           player[h].data = makeImage(image, player[h].location.x, player[h].location.y, gridSize, gridSize, 1);
         }  
         else{
-          gameOver();  
+          gameOver("gored");  
         }  
       }
     }  
@@ -1284,22 +1287,12 @@ function exploreInDirection(currentLocation, direction, purpose) {
 
 //Game Over/Victory Sequence
 
-function gameOver(){
+function gameOver(text){
   gameStatus = "gameOver";  
   blackScreen.style.display = "inline";
-  gameOverTextBackground.style.display = "inline";
-  gameOverText.style.display = "inline";
-  restartButton.style.display = "inline";
-  restartText.style.display = "inline";
-  titleButton.style.display = "inline";  
-  titleText.style.display = "inline";
-}
-
-function gameVictory(){
-  gameStatus = "gameOver";  
-  blackScreen.style.display = "inline";
-  successTextBackground.style.display = "inline";
-  successText.style.display = "inline";
+  gameOverText[text].style.display = "inline";
+  retryButton.style.display = "inline";
+  retryText.style.display = "inline";
   restartButton.style.display = "inline";
   restartText.style.display = "inline";
   titleButton.style.display = "inline";  
@@ -1316,10 +1309,11 @@ function eraseGameProgress(){
     
   
   blackScreen.style.display = "none";
-  gameOverTextBackground.style.display = "none";
-  gameOverText.style.display = "none";
-  successTextBackground.style.display = "none";
-  successText.style.display = "none";
+  for(var h in gameOverText){  
+    gameOverText[h].style.display = "none";
+  }
+  retryButton.style.display = "none";
+  retryText.style.display = "none";
   restartButton.style.display = "none";
   restartText.style.display = "none";
   titleButton.style.display = "none";  
@@ -1327,6 +1321,32 @@ function eraseGameProgress(){
   if(movesToNextFoodText){ movesToNextFoodText.remove(); }  
   if(clippedImage){ clippedImage.remove(); }  
   //gameStatus = false;
+}
+
+function retry(){
+  eraseGameProgress();
+    
+  player[0].data[player[0].data.length] = makeImage("Images/Snake/Green Snake.png", player[0].positionX*gridSize, player[0].positionY*gridSize, gridSize, gridSize, 1); 
+  createFood();  
+  
+  if(gameMode == "Portrait"){ 
+    player[0].data[player[0].data.length-1].remove();
+    player[0].data[player[0].data.length] = makeClipPathRect(player[0].positionX*gridSize, player[0].positionY*gridSize, gridSize, gridSize, 1); 
+    clippedImage = makeImage("Images/Portrait Images/" + imageGallery[Math.floor(Math.random()*imageGallery.length)], 0, 0, "100%", "100%", 1);
+    clippedImage.setAttribute("class", "clip");
+    createFood();  
+  }  
+    
+  if(gameMode == "Co-Op"){
+    player[0].data[player[0].data.length-1].remove();
+    player[0].data[player[0].data.length] = makeImage("Images/Snake/Red Snake.png", player[0].positionX*gridSize, player[0].positionY*gridSize, gridSize, gridSize, 1);    
+    player[1].data[player[1].data.length] = makeImage("Images/Snake/Blue Snake.png", player[1].positionX*gridSize, player[1].positionY*gridSize, gridSize, gridSize, 1); 
+    createFood();
+  } 
+  
+  if(gameMode == "Precision"){ movesToNextFoodText = makeText("Move Remaining: " + movesToNextFood, 24, 32, 18, "Special Elite", 1); } 
+    
+  gameAnimation();
 }
 
 function restart(){
@@ -1413,12 +1433,14 @@ function displayTutorialAgain(){
   slide = 1;  
   displayNextSlide();
   document.removeEventListener('keydown', updatePlayerInput);
+  document.addEventListener('keydown', removeDisplay);
   gameStatus = "inactive";  
 }
 
 function hideTutorialSpace(){
   document.getElementById("tutorialSpace").setAttribute("style", "display: none;");  
-  document.addEventListener('keydown', updatePlayerInput); 
+  document.addEventListener('keydown', updatePlayerInput);
+  document.removeEventListener('keydown', removeDisplay); 
   gameStatus = "mainPhase";  
   gameAnimation();
 }
@@ -1426,31 +1448,36 @@ function hideTutorialSpace(){
 var slide=1;
 function displayNextSlide(){
   if(slide == 1){
-    document.getElementById("tutorialText").innerHTML = "<h3><u>Background:</u></h3><p>&emsp; This game is Snake. A classic from the late 1970s and remastered with Javascript. The purpose of the game is to eat a lot of food and grow big and long! All the while, avoiding the boundaries and cannabalism.</p><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>"; 
+    document.getElementById("tutorialText").innerHTML = "<p>Welcome to Greece! You are the first volunteer to try out the new Labyrinth built by Daedalus! However, be warned that not all test dummies came out safely. But don't worry. The gods, themselves, oversee your journey. Athena, goddess of knowledge, blesses you with the brain to navigate the maze. Hermes, god of thief, make you the supreme sneak! Ares, god of war, gave you the courage to push forth. Daedalus himself gave you the key. Go, Hero!</p><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>"; 
+    document.getElementById("tutorialSpaceHeader").innerHTML = "Background";
     slide = 2;
   }
-  else if(slide ==2){
-    if(gameMode == "Portrait"){
-      document.getElementById("tutorialText").innerHTML = "<h3><u>Portrait:</u></h3><p>&emsp; This is an experimental game mode. The canvas is an invisible picture and only the player can reveal it! Can you complete the picture? Or will you die trying to do so?</p><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>";  
-      slide = 3;   
+  else if(slide == 2){
+    if(gameMode == "escape"){
+    document.getElementById("tutorialText").innerHTML = "<p>If you are here, then your job is to get to the exit! If only it was so simple. So many enemy stand between you and the end. Take heart. Though, they may be fast and nigh indestructible, they can be reckless and slow to change direction. Use those facts to your advantage because knowledge is your only tool. Best of skills!</p><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>"; 
+    document.getElementById("tutorialSpaceHeader").innerHTML = "Escape";
+    slide = 3;   
     }  
-    else if(gameMode == "Precision"){
-      document.getElementById("tutorialText").innerHTML = "<h3><u>Precision:</u></h3><p>&emsp; This is an experimental game mode. You have limited moves to get to the next piece of food! Do not mess up or you will starve! Best of luck. Timing is the key.</p><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>";  
-      slide = 3;   
-    }  
-    else if(gameMode == "Co-Op"){
-      document.getElementById("tutorialText").innerHTML = "<h3><u>Co-Op:</u></h3><p>&emsp; This is an experimental game mode. Two players mean double the fun. Play with a friend and see who is the best, but don't kill each other though. Be a good eSportman.</p><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>";  
-      slide = 3;   
-    }  
-    else{
-      document.getElementById("tutorialText").innerHTML = "<h3><u>Players:</u></h3><ul><li>WASD = Move Snake</li><li>Arrow keys = Move Snake</li></ul><h3><u>Miscellaneous:</u></h3><ul><li>R = Restart</li><li>T = Title Screen</li><li>I/H = Reopen Info</li></ul><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>"; 
-      slide = 1;
+    else if(gameMode == "survival"){
+    document.getElementById("tutorialText").innerHTML = "<p>If you are here, your job is to survive the minotaur onslaught before morning rises. There is no escape. Do your best to stay out of the minotaur's hunting range or die trying to do so. King Minos is watching. He glares from his balcony hoping to see his first victim. That is unless you outwit the minotaur in the battle of time. Best of skills!</p><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>"; 
+    document.getElementById("tutorialSpaceHeader").innerHTML = "Survival";
+    slide = 3;
     }  
   }
   else if(slide == 3){
-    document.getElementById("tutorialText").innerHTML = "<h3><u>Players:</u></h3><ul><li>WASD = Move Snake</li><li>Arrow keys = Move Snake</li></ul><h3><u>Miscellaneous:</u></h3><ul><li>R = Restart</li><li>T = Title Screen</li><li>I/H = Reopen Info</li></ul><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>"; 
+    document.getElementById("tutorialText").innerHTML = "<ul><li>WASD = Move (Player 1)</li><li>Arrow keys = Move (Player 2)</li><li>R = Restart</li><li>T = Title Screen</li><li>I/H = Reopen Info</li><li>Space = Reveal Path</li></ul><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>"; 
+    document.getElementById("tutorialSpaceHeader").innerHTML = "Mechanics";
     slide = 1;
   }
+}
+
+function removeDisplay(event){
+  var key = event.keyCode;
+    
+  // I/H Key  
+  if(key == 73 || key == 72){ 
+      hideTutorialSpace(); 
+  }  
 }
 
 
@@ -1459,34 +1486,58 @@ function displayNextSlide(){
 
 var blackScreen = makeRect(0, 0, (gridX*gridSize), (gridY*gridSize), "black", 0.6);  
   blackScreen.style.display = "none";
-var gameOverTextBackground = makeText("Game Over", 338, 146, 64, "Special Elite", "white", 1);  
-  gameOverTextBackground.style.display = "none";
-var gameOverText = makeText("Game Over", 339.5, 145, 64, "Special Elite", "black", 1);  
-  gameOverText.style.display = "none";
-var successTextBackground = makeText("Overflow", 348.5, 146, 64, "Special Elite", "white", 1);  
-  successTextBackground.style.display = "none";
-var successText = makeText("Overflow", 350, 145, 64, "Special Elite", "black", 1);  
-  successText.style.display = "none";
-var restartButton = makeRect(447, 210, 106, 20, "white", 1);  
+
+var gameOverText = { escaped: makeText("Escaped", 362, 145, 64, "Special Elite", "black", 1),
+                     survived: makeText("Survived", 340, 145, 64, "Special Elite", "black", 1),
+                     gored: makeText("Gored & Punctured", 190, 145, 64, "Special Elite", "black", 1),}
+  
+  for(var h in gameOverText){
+    gameOverText[h].style = "text-shadow: -2px 1px #C5B358";
+    if(h == "gored"){
+      gameOverText[h].style = "text-shadow: -2px 1px red";  
+    }  
+    gameOverText[h].style.display = "none";
+  }
+
+var retryButton = makeRect(437, 190, 106, 20, "white", 1);  
+  retryButton.setAttribute("style", "cursor: pointer;");  
+  retryButton.addEventListener('click', retry);
+  retryButton.setAttribute("stroke", "black");
+  retryButton.setAttribute("stroke-width", 2);  
+  retryButton.style.display = "none";
+var retryText = makeText("Retry", 469, 204.5, 15, "Special Elite", "black", 1);
+  retryText.setAttribute("style", "cursor: pointer;");  
+  retryText.addEventListener('click', retry); 
+  retryText.style.display = "none";
+  retryButton.addEventListener('mouseenter', function(){retryText.setAttribute("opacity", 0);});
+  retryButton.addEventListener('mouseleave', function(){retryText.setAttribute("opacity", 1);});
+
+
+var restartButton = makeRect(437, 230, 106, 20, "white", 1);  
   restartButton.setAttribute("style", "cursor: pointer;");  
   restartButton.addEventListener('click', restart);
   restartButton.setAttribute("stroke", "black");
   restartButton.setAttribute("stroke-width", 2);  
   restartButton.style.display = "none";
-var restartText = makeText("Restart", 471, 224.5, 15, "Special Elite", "black", 1);
+var restartText = makeText("Restart", 461, 244.5, 15, "Special Elite", "black", 1);
   restartText.setAttribute("style", "cursor: pointer;");  
   restartText.addEventListener('click', restart); 
   restartText.style.display = "none";
-var titleButton = makeRect(447, 250, 106, 20, "white", 1);
+  restartButton.addEventListener('mouseenter', function(){restartText.setAttribute("opacity", 0);});
+  restartButton.addEventListener('mouseleave', function(){restartText.setAttribute("opacity", 1);});
+
+var titleButton = makeRect(437, 270, 106, 20, "white", 1);
   titleButton.setAttribute("style", "cursor: pointer;");  
   titleButton.addEventListener('click', returnToTitleScreen);
   titleButton.setAttribute("stroke", "black");
   titleButton.setAttribute("stroke-width", 2); 
   titleButton.style.display = "none";  
-var titleText = makeText("Title Scr.", 463, 264.5, 15, "Special Elite", "black", 1);  
+var titleText = makeText("Title Scr.", 453, 284.5, 15, "Special Elite", "black", 1);  
   titleText.setAttribute("style", "cursor: pointer;");  
   titleText.addEventListener('click', returnToTitleScreen); 
   titleText.style.display = "none";  
+  titleButton.addEventListener('mouseenter', function(){titleText.setAttribute("opacity", 0);});
+  titleButton.addEventListener('mouseleave', function(){titleText.setAttribute("opacity", 1);});
 
 
 
