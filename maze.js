@@ -667,99 +667,104 @@ function gameAnimation(){
     }  
     timer = makeText(minute + ":00", 23, 17, 20, "Special Elite", "black", 0);
   }  
+  //gameOver("gored")
 }
 
 function removeEntrance(subject){
-  var characterCollision = false;  
-  if(subject == "player1"){
-    if(amountOfPlayer == 1 || minotaurPlayer == 1){  
-      if(collides(player[0].data, entrance[subject].collidableObject)){
-        characterCollision = true;    
+  if(gameStatus != "inactive"){
+    var characterCollision = false;  
+    if(subject == "player1"){
+      if(amountOfPlayer == 1 || minotaurPlayer == 1){  
+        if(collides(player[0].data, entrance[subject].collidableObject)){
+          characterCollision = true;    
+        }
       }
-    }
-    else if(amountOfPlayer == 2 && gameMode == "escape" || minotaurPlayer == 0){  
-      if(collides(player[1].data, entrance[subject].collidableObject)){
-        characterCollision = true;  
-      }
-    }  
-  }    
-  else if(subject == "player2"){
-    if(collides(player[0].data, entrance[subject].collidableObject)){
-      characterCollision = true;  
-    }
-  }  
-  else if(subject == "minotaur"){
-    if(amountOfPlayer == 1){  
-        if(collides(minotaur[0].data, entrance[subject].collidableObject)){
-        characterCollision = true;  
-      }
-    } 
-    else if(amountOfPlayer == 2){  
-      if(collides(player[minotaurPlayer].data, entrance[subject].collidableObject)){
-        characterCollision = true;  
+      else if(amountOfPlayer == 2 && gameMode == "escape" || minotaurPlayer == 0){  
+        if(collides(player[1].data, entrance[subject].collidableObject)){
+          characterCollision = true;  
+        }
       }  
-    }  
-  }    
-  if(characterCollision){
-    requestAnimationFrame(function(){ removeEntrance(subject); });
-  }  
-  else{  
-    if(gameMode == "survival" && subject == "player1"){
-      timerId = setInterval(countdown, 1000); 
-    } 
-    if(gameMode == "survival" && subject == "minotaur"){
-      timer.setAttribute("opacity", 1);  
-    }  
-    for(var i=0, length=entrance[subject].mainWall.length; i<length; i++){
-      var x = entrance[subject].mainWall[i].x;
-      var y = entrance[subject].mainWall[i].y;
-      if(subject != "minotaur"){  
-        maze.data[y][x].data.setAttribute("opacity", 1);
+    }    
+    else if(subject == "player2"){
+      if(collides(player[0].data, entrance[subject].collidableObject)){
+        characterCollision = true;  
       }
-      maze.data[y][x].wall.top = true;
-      maze.data[y][x].wall.left = true;
-      maze.data[y][x].wall.bottom = true;
-      maze.data[y][x].wall.right = true;  
-    } 
-    for(var i=0, length=entrance[subject].path.length; i<length; i++){
-      var x = entrance[subject].path[i].x;
-      var y = entrance[subject].path[i].y;
-      maze.data[y][x].wall[entrance[subject].specialWall] = true;  
-      updateMazeWall(x, y);  
-    }      
-  }  
+    }  
+    else if(subject == "minotaur"){
+      if(amountOfPlayer == 1){  
+        if(collides(minotaur[0].data, entrance[subject].collidableObject)){
+          characterCollision = true;  
+        }
+      } 
+      else if(amountOfPlayer == 2){  
+        if(collides(player[minotaurPlayer].data, entrance[subject].collidableObject)){
+          characterCollision = true;  
+        }  
+      }  
+    }    
+    if(characterCollision){
+      requestAnimationFrame(function(){ removeEntrance(subject); });
+    }  
+    else{  
+      if(gameMode == "survival" && subject == "player1"){
+        timerId = setInterval(countdown, 1000); 
+      } 
+      if(gameMode == "survival" && subject == "minotaur"){
+        timer.setAttribute("opacity", 1);  
+      }  
+      for(var i=0, length=entrance[subject].mainWall.length; i<length; i++){
+        var x = entrance[subject].mainWall[i].x;
+        var y = entrance[subject].mainWall[i].y;
+        if(subject != "minotaur"){  
+          maze.data[y][x].data.setAttribute("opacity", 1);
+        }
+        maze.data[y][x].wall.top = true;
+        maze.data[y][x].wall.left = true;
+        maze.data[y][x].wall.bottom = true;
+        maze.data[y][x].wall.right = true;  
+      } 
+      for(var i=0, length=entrance[subject].path.length; i<length; i++){
+        var x = entrance[subject].path[i].x;
+        var y = entrance[subject].path[i].y;
+        maze.data[y][x].wall[entrance[subject].specialWall] = true;  
+        updateMazeWall(x, y);  
+      }      
+    }
+  }
 }
 
 function removeExit(){
-  var mazeEscape = "false";  
-  for(var i=0; i<amountOfPlayer; i++){  
-    if(collides(player[i].data, entrance.minotaur.collidableObject)){
-      mazeEscape = i;  
+  if(gameStatus != "inactive"){
+    var mazeEscape = "false";  
+    for(var i=0; i<amountOfPlayer; i++){  
+      if(collides(player[i].data, entrance.minotaur.collidableObject)){
+        mazeEscape = i;  
+      }
+    }
+    if(mazeEscape == 0 || mazeEscape == 1){
+      player[mazeEscape].data.setAttribute("opacity", 0); 
+      player[mazeEscape].death = true;  
+      for(var i=0, length=entrance.minotaur.mainWall.length; i<length; i++){
+        var x = entrance.minotaur.mainWall[i].x;
+        var y = entrance.minotaur.mainWall[i].y;  
+        maze.data[y][x].data.setAttribute("opacity", 1);
+        maze.data[y][x].wall.top = true;
+        maze.data[y][x].wall.left = true;
+        maze.data[y][x].wall.bottom = true;
+        maze.data[y][x].wall.right = true;  
+      } 
+      for(var i=0, length=entrance.minotaur.path.length; i<length; i++){
+        var x = entrance.minotaur.path[i].x;
+        var y = entrance.minotaur.path[i].y;
+        maze.data[y][x].wall[entrance.minotaur.specialWall] = true;  
+        updateMazeWall(x, y);  
+      } 
+      gameOver("escaped");  
+    } 
+    else{
+      requestAnimationFrame(removeExit);  
     }
   }
-  if(mazeEscape == 0 || mazeEscape == 1){
-    player[mazeEscape].data.setAttribute("opacity", 0); 
-    player[mazeEscape].death = true;  
-    for(var i=0, length=entrance.minotaur.mainWall.length; i<length; i++){
-      var x = entrance.minotaur.mainWall[i].x;
-      var y = entrance.minotaur.mainWall[i].y;  
-      maze.data[y][x].data.setAttribute("opacity", 1);
-      maze.data[y][x].wall.top = true;
-      maze.data[y][x].wall.left = true;
-      maze.data[y][x].wall.bottom = true;
-      maze.data[y][x].wall.right = true;  
-    } 
-    for(var i=0, length=entrance.minotaur.path.length; i<length; i++){
-      var x = entrance.minotaur.path[i].x;
-      var y = entrance.minotaur.path[i].y;
-      maze.data[y][x].wall[entrance.minotaur.specialWall] = true;  
-      updateMazeWall(x, y);  
-    } 
-    gameOver("escaped");  
-  } 
-  else{
-    requestAnimationFrame(removeExit);  
-  }  
 }
 
 function countdown(){
@@ -800,7 +805,7 @@ function playerAnimation(){
         if(assist.status && i == 0){
           if(assist.coolDown.current == 0){
             if(gameMode == "escape"){
-              findPath(player[0], entrance.minotaur.path[1]);  
+              findPath(player[0], entrance.minotaur.path[0]);  
             }  
             else if(gameMode == "survival" && amountOfPlayer == 1){
               findPath(player[0], minotaur[0]);  
@@ -828,12 +833,14 @@ function playerAnimation(){
           }  
         }  
       }  
-      player[i].location.x = player[i].location.x+player[i].kinematic.moveX;  
-      player[i].location.x = Math.round(player[i].location.x*10)/10;  
-      player[i].location.y = player[i].location.y+player[i].kinematic.moveY;  
-      player[i].location.y = Math.round(player[i].location.y*10)/10;
-      player[i].data.setAttribute("x", player[i].location.x);
-      player[i].data.setAttribute("y", player[i].location.y);  
+      if(!player[i].death && gameStatus != "inactive"){
+        player[i].location.x = player[i].location.x+player[i].kinematic.moveX;  
+        player[i].location.x = Math.round(player[i].location.x*10)/10;  
+        player[i].location.y = player[i].location.y+player[i].kinematic.moveY;  
+        player[i].location.y = Math.round(player[i].location.y*10)/10;
+        player[i].data.setAttribute("x", player[i].location.x);
+        player[i].data.setAttribute("y", player[i].location.y);  
+      }
     }  
   }
   if(gameMode == "survival" && amountOfPlayer == 2 && !player[versus["player" + (minotaurPlayer+1)]].death){
@@ -899,16 +906,31 @@ function updatePlayerInput(event){
   } 
   
   // R Key  
-  if(key == 82){ gameStatus = "inactive"; setTimeout(restart, 200); }
+  if(key == 82){   
+    setTimeout(function(){
+      if(gameStatus != "gameOver"){  
+        gameOver("escaped");
+      }
+      restart();  
+    }, 200); 
+  }
   
   // T Key  
-  if(key == 84){ gameStatus = "inactive"; setTimeout(returnToTitleScreen, 200); }
+  if(key == 84){ 
+    setTimeout(function(){
+      if(gameStatus != "gameOver"){        
+        gameOver("escaped");        
+      }
+      returnToTitleScreen();
+    }, 200); 
+  }
   
   // I/H Key  
   if(key == 73 || key == 72){ 
       displayTutorialAgain(); 
   }
-
+  
+  // Space
   if(key == 32){
     if(assist.status){
       assist.status = false;
@@ -1008,7 +1030,7 @@ function findPath(origin, end){
 //Minotaur animation
 
 function minotaurAnimation(){         
-  for(var i=0; i<amountOfMinotaur; i++){
+  for(var i=0, length=minotaur.length; i<length; i++){
     if(minotaur[i].location.x % gridSize == 0 && minotaur[i].location.y % gridSize == 0){ 
       minotaur[i].location.unitX = Math.round(minotaur[i].location.x/gridSize);  
       minotaur[i].location.unitY = Math.round(minotaur[i].location.y/gridSize);  
@@ -1230,10 +1252,10 @@ function locationStatus(currentLocation, direction, newLocation) {
   var dft = newLocation.distanceFromTop;
   var dfl = newLocation.distanceFromLeft;
 
-  if (location.distanceFromLeft < maze.wall.outerWall ||
-      location.distanceFromLeft > (gridX - maze.wall.outerWall) ||
-      location.distanceFromTop < maze.wall.outerWall ||
-      location.distanceFromTop > (gridY - maze.wall.outerWall)) {
+  if (location.distanceFromLeft < 0 ||
+      location.distanceFromLeft > gridX ||
+      location.distanceFromTop < 0 ||
+      location.distanceFromTop > gridY) {
     // location is not on the grid--return false
     return 'invalid';
   } 
@@ -1289,98 +1311,162 @@ function exploreInDirection(currentLocation, direction, purpose) {
 
 function gameOver(text){
   gameStatus = "gameOver";  
-  blackScreen.style.display = "inline";
-  gameOverText[text].style.display = "inline";
-  retryButton.style.display = "inline";
-  retryText.style.display = "inline";
-  restartButton.style.display = "inline";
-  restartText.style.display = "inline";
-  titleButton.style.display = "inline";  
-  titleText.style.display = "inline";
+    
+  blackScreen = makeRect(0, 0, (gridX*gridSize), (gridY*gridSize), "black", 0.6);  
+    
+  if(text == "escaped"){
+    gameOverText = makeText("Escaped", 362, 145, 64, "Special Elite", "black", 1);
+    gameOverText.style = "text-shadow: -2px 1px #C5B358";
+  }
+  else if(text == "survived"){    
+    gameOverText = makeText("Survived", 340, 145, 64, "Special Elite", "black", 1);         
+    gameOverText.style = "text-shadow: -2px 1px #C5B358";
+  }
+  else if(text == "gored"){
+    gameOverText = makeText("Gored & Guzzled", 230, 145, 64, "Special Elite", "black", 1);
+    gameOverText.style = "text-shadow: -2px 1px red";  
+  }
+
+  retryButton = makeRect(437, 190, 106, 20, "white", 1);  
+    retryButton.setAttribute("style", "cursor: pointer;");  
+    retryButton.addEventListener('click', retry);
+    retryButton.setAttribute("stroke", "black");
+    retryButton.setAttribute("stroke-width", 2);
+    
+  retryText = makeText("Retry", 469, 204.5, 15, "Special Elite", "black", 1);
+    retryText.setAttribute("style", "cursor: pointer;");  
+    retryText.addEventListener('click', retry); 
+    retryButton.addEventListener('mouseenter', function(){retryText.setAttribute("opacity", 0);});
+    retryButton.addEventListener('mouseleave', function(){retryText.setAttribute("opacity", 1);});
+
+  restartButton = makeRect(437, 230, 106, 20, "white", 1);  
+    restartButton.setAttribute("style", "cursor: pointer;");  
+    restartButton.addEventListener('click', restart);
+    restartButton.setAttribute("stroke", "black");
+    restartButton.setAttribute("stroke-width", 2);
+    
+  restartText = makeText("Restart", 461, 244.5, 15, "Special Elite", "black", 1);
+    restartText.setAttribute("style", "cursor: pointer;");  
+    restartText.addEventListener('click', restart);
+    restartButton.addEventListener('mouseenter', function(){restartText.setAttribute("opacity", 0);});
+    restartButton.addEventListener('mouseleave', function(){restartText.setAttribute("opacity", 1);});
+
+  titleButton = makeRect(437, 270, 106, 20, "white", 1);
+    titleButton.setAttribute("style", "cursor: pointer;");  
+    titleButton.addEventListener('click', returnToTitleScreen);
+    titleButton.setAttribute("stroke", "black");
+    titleButton.setAttribute("stroke-width", 2); 
+    
+  titleText = makeText("Title Scr.", 453, 284.5, 15, "Special Elite", "black", 1);  
+    titleText.setAttribute("style", "cursor: pointer;");  
+    titleText.addEventListener('click', returnToTitleScreen);
+    titleButton.addEventListener('mouseenter', function(){titleText.setAttribute("opacity", 0);});
+    titleButton.addEventListener('mouseleave', function(){titleText.setAttribute("opacity", 1);});
 }
 
 function eraseGameProgress(){
-  for(var i=player[0].data.length-1; i>=0; i--){ player[0].data[i].remove(); player[0].data.pop(); }
-  for(var i=player[1].data.length-1; i>=0; i--){ player[1].data[i].remove(); player[1].data.pop(); }
-  for(var i=food.length-1; i>=0; i--){ if(food[i]){ food[i].data.remove(); food.pop(); } }
+  gameStatus = "inactive";
+    if(assist.status){
+      assist.status = false;
+      assist.current = 0;
+      for(var y=maze.wall.outerWall; y<(gridY-maze.wall.outerWall); y++){
+        for(var x=maze.wall.outerWall; x<(gridX-maze.wall.outerWall); x++){
+          maze.data[y][x].data.setAttribute("fill", maze.path.color);
+          maze.data[y][x].data.setAttribute("stroke", maze.wall.color);
+  	    }
+      }    
+    }  
     
-  player = [{data: [], maxLength: 4/speed, foodEaten: {status: false, positionX: 0, positionY: 0}, directionX: 1*speed, directionY: 0, futureDirectionX: 1*speed, futureDirectionY: 0, positionX: 0, positionY: gridY-1},
-           {data: [], maxLength: 4/speed, foodEaten: {status: false, positionX: 0, positionY: 0}, directionX: -1*speed, directionY: 0, futureDirectionX: -1*speed, futureDirectionY: 0, positionX: gridX-1, positionY: 0},];
-    
-  
-  blackScreen.style.display = "none";
-  for(var h in gameOverText){  
-    gameOverText[h].style.display = "none";
+  document.removeEventListener('keydown', updatePlayerInput);
+  if(gameMode == "survival" && timerId){
+    clearInterval(timerId);          
+    timer.remove();
+    survivalTime.minute = sessionStorage.survivalTime;
+    survivalTime.second = 0;
   }
-  retryButton.style.display = "none";
-  retryText.style.display = "none";
-  restartButton.style.display = "none";
-  restartText.style.display = "none";
-  titleButton.style.display = "none";  
-  titleText.style.display = "none";
-  if(movesToNextFoodText){ movesToNextFoodText.remove(); }  
-  if(clippedImage){ clippedImage.remove(); }  
-  //gameStatus = false;
+    
+  while(player.length > 0){ 
+    if(player[0].data != ""){
+      player[0].data.remove(); 
+    }
+    player.shift(); 
+  }
+  while(minotaur.length > 0){ 
+    minotaur[0].data.remove(); 
+    minotaur.shift(); 
+  }
+    
+  player = [ {data: "", location: {x: 0, y: 0, unitX: 0, unitY: 0,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0, speed: heroSpeed,}, tag: "hero", death: false,},
+             {data: "", location: {x: 0, y: 0, unitX: 0, unitY: 0,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0, speed: heroSpeed,}, tag: "hero", death: false,}, ];
+    
+  if(gameMode == "survival" && amountOfPlayer == 2){
+    player[minotaurPlayer].tag = "minotaur";
+    player[minotaurPlayer].kinematic.speed = minotaurSpeed;  
+  }
+    
+  blackScreen.remove(); 
+  gameOverText.remove();
+  retryButton.remove();
+  retryText.remove();
+  restartButton.remove();
+  restartText.remove();
+  titleButton.remove();  
+  titleText.remove();
 }
 
 function retry(){
   eraseGameProgress();
-    
-  player[0].data[player[0].data.length] = makeImage("Images/Snake/Green Snake.png", player[0].positionX*gridSize, player[0].positionY*gridSize, gridSize, gridSize, 1); 
-  createFood();  
-  
-  if(gameMode == "Portrait"){ 
-    player[0].data[player[0].data.length-1].remove();
-    player[0].data[player[0].data.length] = makeClipPathRect(player[0].positionX*gridSize, player[0].positionY*gridSize, gridSize, gridSize, 1); 
-    clippedImage = makeImage("Images/Portrait Images/" + imageGallery[Math.floor(Math.random()*imageGallery.length)], 0, 0, "100%", "100%", 1);
-    clippedImage.setAttribute("class", "clip");
-    createFood();  
-  }  
-    
-  if(gameMode == "Co-Op"){
-    player[0].data[player[0].data.length-1].remove();
-    player[0].data[player[0].data.length] = makeImage("Images/Snake/Red Snake.png", player[0].positionX*gridSize, player[0].positionY*gridSize, gridSize, gridSize, 1);    
-    player[1].data[player[1].data.length] = makeImage("Images/Snake/Blue Snake.png", player[1].positionX*gridSize, player[1].positionY*gridSize, gridSize, gridSize, 1); 
-    createFood();
-  } 
-  
-  if(gameMode == "Precision"){ movesToNextFoodText = makeText("Move Remaining: " + movesToNextFood, 24, 32, 18, "Special Elite", 1); } 
-    
-  gameAnimation();
+      
+  setTimeout(function(){    
+    document.addEventListener('keydown', updatePlayerInput);
+    createCharacter();    
+    gameStatus = "mainPhase";
+    gameAnimation();  
+  }, 200);
 }
 
 function restart(){
   eraseGameProgress();
-    
-  player[0].data[player[0].data.length] = makeImage("Images/Snake/Green Snake.png", player[0].positionX*gridSize, player[0].positionY*gridSize, gridSize, gridSize, 1); 
-  createFood();  
-  
-  if(gameMode == "Portrait"){ 
-    player[0].data[player[0].data.length-1].remove();
-    player[0].data[player[0].data.length] = makeClipPathRect(player[0].positionX*gridSize, player[0].positionY*gridSize, gridSize, gridSize, 1); 
-    clippedImage = makeImage("Images/Portrait Images/" + imageGallery[Math.floor(Math.random()*imageGallery.length)], 0, 0, "100%", "100%", 1);
-    clippedImage.setAttribute("class", "clip");
-    createFood();  
-  }  
-    
-  if(gameMode == "Co-Op"){
-    player[0].data[player[0].data.length-1].remove();
-    player[0].data[player[0].data.length] = makeImage("Images/Snake/Red Snake.png", player[0].positionX*gridSize, player[0].positionY*gridSize, gridSize, gridSize, 1);    
-    player[1].data[player[1].data.length] = makeImage("Images/Snake/Blue Snake.png", player[1].positionX*gridSize, player[1].positionY*gridSize, gridSize, gridSize, 1); 
-    createFood();
-  } 
-  
-  if(gameMode == "Precision"){ movesToNextFoodText = makeText("Move Remaining: " + movesToNextFood, 24, 32, 18, "Special Elite", 1); } 
-    
-  gameAnimation();
+ 
+  setTimeout(function(){
+    for(var y=0, length=maze.data.length; y<length; y++){
+      for(var x=0, xLength=maze.data[y].length; x<xLength; x++){
+        maze.data[y][x].data.remove();
+      }
+    }
+  /*
+    visited = 1;
+    currentCell = [Math.floor(Math.random()*(gridY-(maze.wall.outerWall*2)))+maze.wall.outerWall, Math.floor(Math.random()*(gridX -(maze.wall.outerWall*2)))+maze.wall.outerWall,];
+    path = [currentCell];
+
+    maze.data[currentCell[0]][currentCell[1]].visited = true;
+    maze.data[currentCell[0]][currentCell[1]].data.setAttribute("opacity", 1);
+    maze.data[currentCell[0]][currentCell[1]].data.setAttribute("fill", "black");
+  */
+    visited = 1;
+    document.getElementById("canvas").style.background = "none";
+    document.addEventListener('keypress', skipMazeCreation);  
+    drawGrid();  
+    generateMaze();  
+    createCharacter();
+    addGameColor();    
+  }, 200);
 }
 
 function returnToTitleScreen(){
   eraseGameProgress();
-  document.body.style.backgroundImage = "url('Images/Background/Black Background.png')"; 
+    
+  for(var y=0, length=maze.data.length; y<length; y++){
+    for(var x=0, xLength=maze.data[y].length; x<xLength; x++){
+      maze.data[y][x].data.remove();
+    }
+  }
+  document.getElementById("canvas").style.background = "none";
+  visited = 1;
+  drawGrid();
+    
   document.getElementById("gameScreen").style.display = "none";
-  document.getElementById("modeScreen").style.display = "inline";  
-  document.removeEventListener('keydown', updatePlayerInput);
+  document.getElementById("modeScreen").style.display = "inline";
 }
 
 
@@ -1484,60 +1570,18 @@ function removeDisplay(event){
 
 // For Game Over Screen
 
-var blackScreen = makeRect(0, 0, (gridX*gridSize), (gridY*gridSize), "black", 0.6);  
-  blackScreen.style.display = "none";
+var blackScreen;
 
-var gameOverText = { escaped: makeText("Escaped", 362, 145, 64, "Special Elite", "black", 1),
-                     survived: makeText("Survived", 340, 145, 64, "Special Elite", "black", 1),
-                     gored: makeText("Gored & Punctured", 190, 145, 64, "Special Elite", "black", 1),}
-  
-  for(var h in gameOverText){
-    gameOverText[h].style = "text-shadow: -2px 1px #C5B358";
-    if(h == "gored"){
-      gameOverText[h].style = "text-shadow: -2px 1px red";  
-    }  
-    gameOverText[h].style.display = "none";
-  }
+var gameOverText;
 
-var retryButton = makeRect(437, 190, 106, 20, "white", 1);  
-  retryButton.setAttribute("style", "cursor: pointer;");  
-  retryButton.addEventListener('click', retry);
-  retryButton.setAttribute("stroke", "black");
-  retryButton.setAttribute("stroke-width", 2);  
-  retryButton.style.display = "none";
-var retryText = makeText("Retry", 469, 204.5, 15, "Special Elite", "black", 1);
-  retryText.setAttribute("style", "cursor: pointer;");  
-  retryText.addEventListener('click', retry); 
-  retryText.style.display = "none";
-  retryButton.addEventListener('mouseenter', function(){retryText.setAttribute("opacity", 0);});
-  retryButton.addEventListener('mouseleave', function(){retryText.setAttribute("opacity", 1);});
+var retryButton;
+var retryText;
 
+var restartButton;
+var restartText;
 
-var restartButton = makeRect(437, 230, 106, 20, "white", 1);  
-  restartButton.setAttribute("style", "cursor: pointer;");  
-  restartButton.addEventListener('click', restart);
-  restartButton.setAttribute("stroke", "black");
-  restartButton.setAttribute("stroke-width", 2);  
-  restartButton.style.display = "none";
-var restartText = makeText("Restart", 461, 244.5, 15, "Special Elite", "black", 1);
-  restartText.setAttribute("style", "cursor: pointer;");  
-  restartText.addEventListener('click', restart); 
-  restartText.style.display = "none";
-  restartButton.addEventListener('mouseenter', function(){restartText.setAttribute("opacity", 0);});
-  restartButton.addEventListener('mouseleave', function(){restartText.setAttribute("opacity", 1);});
-
-var titleButton = makeRect(437, 270, 106, 20, "white", 1);
-  titleButton.setAttribute("style", "cursor: pointer;");  
-  titleButton.addEventListener('click', returnToTitleScreen);
-  titleButton.setAttribute("stroke", "black");
-  titleButton.setAttribute("stroke-width", 2); 
-  titleButton.style.display = "none";  
-var titleText = makeText("Title Scr.", 453, 284.5, 15, "Special Elite", "black", 1);  
-  titleText.setAttribute("style", "cursor: pointer;");  
-  titleText.addEventListener('click', returnToTitleScreen); 
-  titleText.style.display = "none";  
-  titleButton.addEventListener('mouseenter', function(){titleText.setAttribute("opacity", 0);});
-  titleButton.addEventListener('mouseleave', function(){titleText.setAttribute("opacity", 1);});
+var titleButton; 
+var titleText;
 
 
 
