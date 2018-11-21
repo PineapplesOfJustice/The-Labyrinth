@@ -71,7 +71,7 @@ var player2Y = 0;
 var player = [ {data: "", location: {x: 0, y: 0, unitX: 0, unitY: 0,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0, speed: heroSpeed,}, tag: "hero", death: false,},
              {data: "", location: {x: 0, y: 0, unitX: 0, unitY: 0,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0, speed: heroSpeed,}, tag: "hero", death: false,}, ];
 
-var minotaur = [ {data: "", location: {x: 0, y: 0, unitX: 0, unitY: 0,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0,}, trackCoolDown: {current: 0, add: 7,}, speed: {inactive: 1, active: 2, offensive: 4,}, targetLock: "inactive", stunTime: {current: 0, add: 30,}, path: [], kill: false,},];
+var minotaur = [ {data: "", location: {x: 0, y: 0, unitX: 0, unitY: 0,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0,}, trackCoolDown: {current: 0, add: 7,}, speed: {inactive: 1, active: 2, offensive: 4,}, targetLock: "inactive", stunTime: {current: 0, add: 35,}, path: [], kill: false,},];
 minotaur = [];
 
 //targetLock = false, true, attack; used to determine minotaur speed: 1.0, 2.5, 4.0
@@ -80,7 +80,7 @@ var motionUnit = { top: {moveX: 0, moveY: -1, direction: "top", opposite: "botto
 
 var versus = { player1: 1, player2: 0, }
 
-var assist = { status: false, coolDown: {current: 0, add: 7,} };
+var assist = { status: false, coolDown: {current: 0, add: 12,}, receiver: 0, };
 
 
 //Intial Opening Sequence
@@ -779,12 +779,15 @@ function removeExit(){
     var mazeEscape = "false";  
     for(var i=0; i<amountOfPlayer; i++){  
       if(collides(player[i].data, entrance.minotaur.collidableObject)){
+        assist.status = false;  
         mazeEscape = i;  
       }
     }
     if(mazeEscape == 0 || mazeEscape == 1){
-      player[mazeEscape].data.setAttribute("opacity", 0); 
-      player[mazeEscape].death = true;  
+      player[mazeEscape].location.unitY = -2;
+      player[mazeEscape].location.y = -2*gridSize;
+      player[mazeEscape].data.setAttribute("y", -2*gridSize);
+      player[mazeEscape].death = true; 
       for(var i=0, length=entrance.minotaur.mainWall.length; i<length; i++){
         var x = entrance.minotaur.mainWall[i].x;
         var y = entrance.minotaur.mainWall[i].y;  
@@ -845,36 +848,6 @@ function playerAnimation(){
         currentPlayerLocation.unitX = Math.round(currentPlayerLocation.x/gridSize);  
         currentPlayerLocation.unitY = Math.round(currentPlayerLocation.y/gridSize);  
         updatePlayerAnimation(i); 
-        if(assist.status && i == 0){
-          if(assist.coolDown.current == 0){
-            if(gameMode == "escape"){
-              findPath(player[0], entrance.minotaur.path[0]);  
-            }  
-            else if(gameMode == "survival" && amountOfPlayer == 1){
-              findPath(player[0], minotaur[0]);  
-            }  
-            else if(gameMode == "survival" && amountOfPlayer == 2){
-              findPath(player[0], player[1]);  
-            }  
-            assist.coolDown.current = assist.coolDown.add;  
-          }
-          else{
-            assist.coolDown.current -= 1;  
-          } 
-          if(maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.getAttribute("fill") == maze.path.color){  
-            maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.setAttribute("fill", "#483C32");
-            maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.setAttribute("stroke", "black");   
-          }  
-          /*    
-          else if(maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.getAttribute("fill") == "#483C32"){  
-            maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.setAttribute("fill", maze.path.color);
-            maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.setAttribute("stroke", maze.wall.color);  
-          } 
-          */
-          if(currentPlayer.death){
-            assist.status = false;  
-          }  
-        }  
       }  
       if(!currentPlayer.death && gameStatus != "inactive"){
         currentPlayerLocation.x = currentPlayerLocation.x+currentPlayer.kinematic.moveX;  
@@ -886,6 +859,35 @@ function playerAnimation(){
       }
     }  
   }
+  if(assist.status){
+    var currentPlayer = player[assist.receiver];  
+    var currentPlayerLocation = currentPlayer.location;
+    if(assist.coolDown.current == 0){
+      if(gameMode == "escape"){
+        findPath(currentPlayer, entrance.minotaur.path[0]);  
+      }  
+      else if(gameMode == "survival" && amountOfPlayer == 1){
+        findPath(player[0], minotaur[0]);  
+      }  
+      else if(gameMode == "survival" && amountOfPlayer == 2){
+        findPath(player[0], player[1]);  
+      }  
+      assist.coolDown.current = assist.coolDown.add;  
+    }
+    else{
+      assist.coolDown.current -= 1;  
+    } 
+    if(maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.getAttribute("fill") == maze.path.color){  
+      maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.setAttribute("fill", "#483C32");
+      maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.setAttribute("stroke", "black");   
+    }  
+    /*    
+    else if(maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.getAttribute("fill") == "#483C32"){  
+      maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.setAttribute("fill", maze.path.color);
+      maze.data[currentPlayerLocation.unitY][currentPlayerLocation.unitX].data.setAttribute("stroke", maze.wall.color);  
+    } 
+    */ 
+  }  
   if(gameMode == "survival" && amountOfPlayer == 2 && !player[versus["player" + (minotaurPlayer+1)]].death){
     checkForPlayerCollision();  
   }  
@@ -995,7 +997,7 @@ function updatePlayerInput(event){
 }
 
 function checkForPlayerCollision(){
-  if(collides(player[0].data, player[1].data)){
+  if(gameStatus == "mainPhase" && collides(player[0].data, player[1].data)){
     var capturedPlayer = versus["player" + (minotaurPlayer+1)];  
     player[capturedPlayer].death = true;
     player[capturedPlayer].data.setAttribute("opacity", 0);  
@@ -1142,7 +1144,7 @@ function updateMinotaurAnimation(minotaurId){
     else if(currentMinotaur.targetLock == "inactive"){
       if(currentMinotaur.trackCoolDown.current == 0){
         if(gameMode == "escape"){  
-          currentMinotaur.path = trackingAI(minotaurId, motionUnit[currentMinotaurKinematic.direction.current].opposite, 12);  
+          currentMinotaur.path = trackingAI(minotaurId, motionUnit[currentMinotaurKinematic.direction.current].opposite, 15);  
         }
         else{
           currentMinotaur.path = trackingAI(minotaurId, motionUnit[currentMinotaurKinematic.direction.current].opposite, 75);  
@@ -1174,38 +1176,43 @@ function updateMinotaurAnimation(minotaurId){
 }
 
 function checkForMinotaurCollision(minotaurId){
-  for(var i=0; i<amountOfPlayer; i++){  
-    if(!player[i].death){  
-      if(collides(minotaur[minotaurId].data, player[i].data)){
-        player[i].death = true;
-        player[i].data.setAttribute("opacity", 0);  
-        setTimeout(function(){
-          for(var h=0; h<amountOfPlayer; h++){
-            if(player[h].death){   
-              player[h].data.setAttribute("opacity", 1);
-              player[h].data.setAttribute("xlink:href", "Images/Character/Gravestone.png");  
+  if(gameStatus == "mainPhase" || gameMode == "escape"){  
+    for(var i=0; i<amountOfPlayer; i++){  
+      if(!player[i].death){  
+        if(collides(minotaur[minotaurId].data, player[i].data)){
+          player[i].death = true;
+          player[i].data.setAttribute("opacity", 0);  
+          setTimeout(function(){
+            for(var h=0; h<amountOfPlayer; h++){
+              if(player[h].death){   
+                player[h].data.setAttribute("opacity", 1);
+                player[h].data.setAttribute("xlink:href", "Images/Character/Gravestone.png");  
+              }
             }
+          }, 1000);
+          var survivor = false;  
+          minotaur[minotaurId].kill = true;
+          minotaur[minotaurId].trackCoolDown.current = 0;
+          for(var h=0; h<amountOfPlayer; h++){
+            if(!player[h].death){
+              survivor = true;  
+            }  
           }
-        }, 1000);
-        var survivor = false;  
-        minotaur[minotaurId].kill = true;
-        minotaur[minotaurId].trackCoolDown.current = 0;
-        for(var h=0; h<amountOfPlayer; h++){
-          if(!player[h].death){
-            survivor = true;  
+          if(survivor){
+            var h = versus["player" + (i+1)];
+            assist.receiver = h;  
+            var image = player[h].data.getAttribute("xlink:href");
+            player[h].data.remove();
+            player[h].data = makeImage(image, player[h].location.x, player[h].location.y, gridSize, gridSize, 1);
+          }  
+          else if(gameStatus == "gameOver"){ }
+          else{
+            assist.status = false;  
+            gameOver("gored");  
           }  
         }
-        if(survivor){
-          var h = versus["player" + (i+1)];
-          var image = player[h].data.getAttribute("xlink:href");
-          player[h].data.remove();
-          player[h].data = makeImage(image, player[h].location.x, player[h].location.y, gridSize, gridSize, 1);
-        }  
-        else{
-          gameOver("gored");  
-        }  
-      }
-    }  
+      }  
+    }
   }
 }
 
@@ -1368,7 +1375,14 @@ function exploreInDirection(currentLocation, direction, purpose) {
 //Game Over/Victory Sequence
 
 function gameOver(text){
-  gameStatus = "gameOver";  
+  gameStatus = "gameOver";    
+  for(var y=maze.wall.outerWall; y<(gridY-maze.wall.outerWall); y++){
+    for(var x=maze.wall.outerWall; x<(gridX-maze.wall.outerWall); x++){
+      maze.data[y][x].data.setAttribute("fill", maze.path.color);
+      maze.data[y][x].data.setAttribute("stroke", maze.wall.color);
+    }
+  }
+  assist.status = false;  
     
   blackScreen = makeRect(0, 0, (gridX*gridSize), (gridY*gridSize), "black", 0.6);  
     
@@ -1434,6 +1448,7 @@ function eraseGameProgress(){
   	    }
       }    
     }  
+  assist.receiver = 0;
     
   document.removeEventListener('keydown', updatePlayerInput);
   if(gameMode == "survival" && timerId){
