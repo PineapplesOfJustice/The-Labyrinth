@@ -71,7 +71,7 @@ var player2Y = 0;
 var player = [ {data: "", location: {x: 0, y: 0, unitX: 0, unitY: 0,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0, speed: heroSpeed,}, tag: "hero", death: false,},
              {data: "", location: {x: 0, y: 0, unitX: 0, unitY: 0,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0, speed: heroSpeed,}, tag: "hero", death: false,}, ];
 
-var minotaur = [ {data: "", location: {x: 0, y: 0, unitX: 0, unitY: 0,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0,}, trackCoolDown: {current: 0, add: 7,}, speed: {inactive: 1, active: 2, offensive: 4,}, targetLock: "inactive", stunTime: {current: 0, add: 35,}, path: [], kill: false,},];
+var minotaur = [ {data: "", location: {x: 0, y: 0, unitX: 0, unitY: 0,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0,}, trackCoolDown: {current: 0, add: 5,}, speed: {inactive: 1, active: 2, offensive: 4,}, targetLock: "inactive", stunTime: {current: 0, add: 20,}, path: [], kill: false,},];
 minotaur = [];
 
 //targetLock = false, true, attack; used to determine minotaur speed: 1.0, 2.5, 4.0
@@ -537,7 +537,7 @@ function createCharacter(){
       player[0].location.y = (gridY-1)*gridSize;      
       player[0].location.unitX = (gridX-3);      
       player[0].location.unitY = (gridY-1);     
-      minotaur[0] = { data: makeImage("Images/Character/Minotaur.png", (maze.wall.outerWall+1)*gridSize, (maze.wall.outerWall-1)*gridSize, gridSize, gridSize, 1), location: {x: (maze.wall.outerWall+1)*gridSize, y: (maze.wall.outerWall-1)*gridSize, unitX: (maze.wall.outerWall+1), unitY: (maze.wall.outerWall-1),}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0,}, trackCoolDown: {current: 0, add: 3,}, speed: {inactive: 1, active: 2.5, offensive: 4,}, targetLock: "inactive", stunTime: {current: 0, add: 20,}, path: [], kill: false, }; 
+      minotaur[0] = { data: makeImage("Images/Character/Minotaur.png", (maze.wall.outerWall+1)*gridSize, (maze.wall.outerWall-1)*gridSize, gridSize, gridSize, 1), location: {x: (maze.wall.outerWall+1)*gridSize, y: (maze.wall.outerWall-1)*gridSize, unitX: (maze.wall.outerWall+1), unitY: (maze.wall.outerWall-1),}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0,}, trackCoolDown: {current: 0, add: 5,}, speed: {inactive: 1, active: 2, offensive: 4,}, targetLock: "inactive", stunTime: {current: 0, add: 20,}, path: [], kill: false, }; 
     }  
     else if(gameMode == "survival" && amountOfPlayer == 2){
       for(var i=0; i<amountOfPlayer; i++){  
@@ -582,7 +582,7 @@ function createCharacter(){
             }  
           }
           if(x != 0 || y != 0){  
-            minotaur[i] = { data: makeImage("Images/Character/Minotaur.png", x, y, gridSize, gridSize, 1), location: {x: x, y: y, unitX: x/gridSize, unitY: y/gridSize,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0,}, trackCoolDown: {current: 0, add: 3,}, speed: {inactive: 1, active: 2.5, offensive: 4,}, targetLock: "inactive", stunTime: {current: 0, add: 20,}, path: [], kill: false, };    
+            minotaur[i] = { data: makeImage("Images/Character/Minotaur.png", x, y, gridSize, gridSize, 1), location: {x: x, y: y, unitX: x/gridSize, unitY: y/gridSize,}, kinematic: {direction: {current: "none", expected: "none"}, moveX: 0, moveY: 0,}, trackCoolDown: {current: 0, add: 7,}, speed: {inactive: 1, active: 2, offensive: 4,}, targetLock: "inactive", stunTime: {current: 0, add: 15,}, path: [], kill: false, };    
             minotaur[i].path = trackingAI(i, "none", 25);  
             if(minotaur[i].targetLock == "active"){
               x = 0;
@@ -1147,7 +1147,7 @@ function updateMinotaurAnimation(minotaurId){
           currentMinotaur.path = trackingAI(minotaurId, motionUnit[currentMinotaurKinematic.direction.current].opposite, 15);  
         }
         else{
-          currentMinotaur.path = trackingAI(minotaurId, motionUnit[currentMinotaurKinematic.direction.current].opposite, 75);  
+          currentMinotaur.path = trackingAI(minotaurId, motionUnit[currentMinotaurKinematic.direction.current].opposite, 70);  
         }
         //console.log(currentMinotaur.path)  
         currentMinotaur.trackCoolDown.current = currentMinotaur.trackCoolDown.add;
