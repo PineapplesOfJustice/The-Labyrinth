@@ -1,2 +1,2 @@
 # The Labyrinth
-Practice maze generation AI and tracking AI with breadth-search method.
+Link: [Github Page](https://pineapplesofjustice.github.io/The-Labyrinth/ "The Labyrinth")
