@@ -864,7 +864,7 @@ function playerAnimation(){
     var currentPlayerLocation = currentPlayer.location;
     if(assist.coolDown.current == 0){
       if(gameMode == "escape"){
-        findPath(currentPlayer, entrance.minotaur.path[0]);  
+        findPath(currentPlayer, entrance.minotaur.mainWall);  
       }  
       else if(gameMode == "survival" && amountOfPlayer == 1){
         findPath(player[0], minotaur[0]);  
@@ -1025,11 +1025,13 @@ function findPath(origin, end){
 	  maze.data[y][x].specialStatus = "none";
 	}
   }  
-  if(typeof end.location == "undefined"){  
-    maze.data[end.x][end.y].specialStatus = "goal"; 
+  if(Array.isArray(end)){  
+    for(var i=0, length=end.length; i<length; i++){
+      maze.data[end[i].y][end[i].x].specialStatus = "goal"; 
+    }
   }
-  else{
-    maze.data[end.location.unitY][end.location.unitX].specialStatus = "goal"; 
+  else{ 
+    maze.data[end.location.unitY][end.location.unitX].specialStatus = "goal";
   }  
     
   var distanceFromTop = origin.location.unitY;
@@ -1065,7 +1067,12 @@ function findPath(origin, end){
             maze.data[newLocation.path[i][0]][newLocation.path[i][1]].data.setAttribute("fill", maze.path.color);
             maze.data[newLocation.path[i][0]][newLocation.path[i][1]].data.setAttribute("stroke", maze.wall.color);
           }
-            return true;  
+          if(Array.isArray(end)){  
+            for(var i=0, length=end.length; i<length; i++){
+              maze.data[end[i].y][end[i].x].specialStatus = "obstacle"; 
+            }
+          }
+          return true;  
         } 
         else if (newLocation.status === 'valid') {  
           queue.push(newLocation);  
@@ -1371,7 +1378,6 @@ function exploreInDirection(currentLocation, direction, purpose) {
 };
 
 
-
 //Game Over/Victory Sequence
 
 function gameOver(text){
@@ -1543,7 +1549,6 @@ function returnToTitleScreen(){
 }
 
 
-
 //Used W3School
 //Draggable Tutorial
 
@@ -1640,7 +1645,6 @@ function removeDisplay(event){
 }
 
 
-
 // For Game Over Screen
 
 var blackScreen;
@@ -1655,7 +1659,6 @@ var restartText;
 
 var titleButton; 
 var titleText;
-
 
 
 // DO NOT EDIT CODE BELOW THIS LINE!
