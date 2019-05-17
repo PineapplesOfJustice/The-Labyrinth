@@ -1,7 +1,7 @@
 
 /////////////////////////*
 
-// when dealing with continuous numbers, the computer may actually add incorrectly. Thus, it is best ot round the number often to negate those mistakes.
+// when dealing with continuous numbers, the computer may actually add incorrectly. Thus, it is best to round the number often to negate those mistakes.
 
 // (Alt + 1) make everything look nicer
 
